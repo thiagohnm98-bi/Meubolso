@@ -1,0 +1,9 @@
+{
+  "appId": "br.app.meubolso",
+  "appName": "Meu Bolso",
+  "webDir": "www",
+  "android": { "backgroundColor": "#FBFAF7" },
+  "plugins": {
+    "LocalNotifications": { "smallIcon": "ic_stat_icon", "iconColor": "#1E5A48" }
+  }
+}
