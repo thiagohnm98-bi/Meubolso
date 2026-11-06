@@ -1,0 +1,52 @@
+name: Gerar APK
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Instalar dependências
+        run: npm install
+
+      - name: Criar projeto Android
+        run: npx cap add android
+
+      - name: Ícones do app
+        run: npx capacitor-assets generate --android --iconBackgroundColor '#1E5A48' --splashBackgroundColor '#FBFAF7'
+        continue-on-error: true
+
+      - name: Ícone das notificações
+        run: |
+          mkdir -p android/app/src/main/res/drawable
+          cp assets/ic_stat_icon.png android/app/src/main/res/drawable/ic_stat_icon.png
+
+      - name: Sincronizar app web e plugins
+        run: npx cap sync android
+
+      - name: Compilar APK
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
+
+      - name: Publicar APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: meu-bolso-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
